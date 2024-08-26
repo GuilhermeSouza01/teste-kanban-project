@@ -8,3 +8,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
+
+
+Route::apiResource('columns', ColumnController::class);
+Route::apiResource('tasks', TaskController::class);
+Route::put('tasks/rorder', [TaskController::class, 'rorder']);
+Route::put('columns/rorder', [ColumnController::class, 'rorder']);
