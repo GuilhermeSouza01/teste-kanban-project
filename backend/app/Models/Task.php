@@ -9,7 +9,7 @@ class Task extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'description', 'column_id', 'position'];
+    protected $fillable = ['title', 'description', 'column_id', 'order'];
 
     public function column()
     {

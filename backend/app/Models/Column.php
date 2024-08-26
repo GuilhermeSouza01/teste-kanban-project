@@ -9,7 +9,7 @@ class Column extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'position', 'header_background_color'];
+    protected $fillable = ['title', 'order', 'header_background_color'];
 
     public function tasks()
     {
