@@ -14,7 +14,7 @@ class ColumnController extends Controller
      */
     public function index()
     {
-        $columns = Column::get();
+        $columns = Column::with('tasks')->get();
 
         return response()->json([
             'status' => 'success',
