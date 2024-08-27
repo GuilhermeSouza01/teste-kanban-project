@@ -1,18 +1,17 @@
-
-
-import './App.css'
-import Board from './components/Board'
-import GlobalStyles from './styles/GlobalStyles'
+import "./App.css";
+import Board from "./components/Board";
+import { KanbanProvider } from "./context/KanbanContext";
+import GlobalStyles from "./styles/GlobalStyles";
 
 function App() {
-
-
   return (
     <>
       <GlobalStyles />
-      <Board />
+      <KanbanProvider>
+        <Board />
+      </KanbanProvider>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
