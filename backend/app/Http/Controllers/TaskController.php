@@ -134,7 +134,8 @@ class TaskController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Tarefas reordenadas com sucesso'
+            'message' => 'Tarefas reordenadas com sucesso',
+            'data' => $tasks
         ], 200);
     }
 }
