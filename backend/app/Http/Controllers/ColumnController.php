@@ -122,4 +122,18 @@ class ColumnController extends Controller
             'message' => 'Colunas reordenadas com sucesso'
         ], 200);
     }
+
+    public function updateOrder(Request $request)
+    {
+        $columns = $request->input('columns');
+
+        foreach ($columns as $index => $column) {
+            Column::where('id', $column['id'])->update(['order' => $index]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Columns reordered successfully'
+        ], 200);
+    }
 }
