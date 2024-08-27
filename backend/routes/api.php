@@ -15,3 +15,4 @@ Route::apiResource('tasks', TaskController::class);
 Route::put('tasks/rorder', [TaskController::class, 'rorder']);
 Route::put('columns/rorder', [ColumnController::class, 'rorder']);
 Route::post('/tasks/update-order', [TaskController::class, 'updateOrder']);
+Route::post('/columns/update-order', [ColumnController::class, 'updateOrder']);
