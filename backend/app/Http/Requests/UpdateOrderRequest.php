@@ -23,7 +23,7 @@ class UpdateOrderRequest extends FormRequest
     {
         return [
             'tasks' => 'required|array',
-            'tasks.*' => 'integer|exists:tasks,id',
+            'tasks.*.id' => 'required|integer|exists:tasks,id',
             'tasks.*.column_id' => 'integer|exists:columns,id',
             'tasks.*.order' => 'integer'
         ];
