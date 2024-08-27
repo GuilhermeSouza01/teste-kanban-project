@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreTaskRequest;
+use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -106,6 +107,27 @@ class TaskController extends Controller
         foreach ($tasks as $task) {
             Task::where('id', $task['id'])->update([
                 'order' => $task['order'],
+                'column_id' => $task['column_id']
+            ]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Tarefas reordenadas com sucesso'
+        ], 200);
+    }
+
+    public function updateOrder(UpdateOrderRequest $request)
+    {
+        //Atualiza a ordem e as colunas das tarefas
+
+        $request->validated();
+
+        $tasks = $request->input('tasks');
+
+        foreach ($tasks as $index => $task) {
+            Task::where('id', $task['id'])->update([
+                'order' => $index,
                 'column_id' => $task['column_id']
             ]);
         }
