@@ -125,12 +125,15 @@ class TaskController extends Controller
 
         $tasks = $request->input('tasks');
 
-        foreach ($tasks as $index => $task) {
-            Task::where('id', $task['id'])->update([
-                'order' => $index,
-                'column_id' => $task['column_id']
-            ]);
+        foreach ($tasks as $task) {
+            $taskModel = Task::find($task['id']);
+            if ($taskModel) {
+                $taskModel->column_id = $task['column_id'];
+                $taskModel->order = $task['order'];
+                $taskModel->save();
+            }
         }
+
 
         return response()->json([
             'status' => 'success',

@@ -102,38 +102,17 @@ class ColumnController extends Controller
     /**
      * Order the columns.
      */
-    public function reorderColumn(UpdateColumnRequest $request)
+    public function updateColumnOrder(Request $request)
     {
-
-        $request->validated();
-
         $columns = $request->input('columns');
 
-        //Atualiza a ordem das colunas
-
-        // Atualiza a ordem das colunas
         foreach ($columns as $index => $column) {
-            // Atualiza a ordem da coluna baseada na posição do array
             Column::where('id', $column['id'])->update(['order' => $index]);
         }
 
         return response()->json([
             'status' => 'success',
             'message' => 'Colunas reordenadas com sucesso'
-        ], 200);
-    }
-
-    public function updateOrder(Request $request)
-    {
-        $columns = $request->input('columns');
-
-        foreach ($columns as $index => $column) {
-            Column::where('id', $column['id'])->update(['order' => $index]);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Columns reordered successfully'
         ], 200);
     }
 }

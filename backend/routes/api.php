@@ -12,7 +12,9 @@ Route::get('/user', function (Request $request) {
 
 Route::apiResource('columns', ColumnController::class);
 Route::apiResource('tasks', TaskController::class);
-Route::put('tasks/rorder', [TaskController::class, 'rorder']);
-Route::put('columns/rorder', [ColumnController::class, 'rorder']);
+
+// Atualiza a ordem das tarefas
 Route::post('/tasks/update-order', [TaskController::class, 'updateOrder']);
-Route::post('/columns/update-order', [ColumnController::class, 'updateOrder']);
+
+// Atualiza a ordem das colunas
+Route::post('/columns/update-order', [ColumnController::class, 'updateColumnOrder']);
