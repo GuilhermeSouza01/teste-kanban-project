@@ -125,12 +125,12 @@ class TaskController extends Controller
 
         $tasks = $request->input('tasks');
 
-        foreach ($tasks as $task) {
-            $taskModel = Task::find($task['id']);
-            if ($taskModel) {
-                $taskModel->column_id = $task['column_id'];
-                $taskModel->order = $task['order'];
-                $taskModel->save();
+        foreach ($tasks as $taskData) {
+            $task = Task::find($taskData['id']);
+
+            if ($task->order != $taskData['order']) {
+                $task->order = $taskData['order'];
+                $task->save();
             }
         }
 
