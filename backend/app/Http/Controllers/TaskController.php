@@ -117,11 +117,11 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function updateOrder(UpdateOrderRequest $request)
+    public function updateOrder(Request $request)
     {
         //Atualiza a ordem e as colunas das tarefas
 
-        $request->validated();
+        // $request->validated();
 
         $tasks = $request->input('tasks');
 

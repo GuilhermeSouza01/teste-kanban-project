@@ -76,7 +76,7 @@ class ColumnController extends Controller
         $request->validated();
 
         $column = Column::findOrFail($id);
-        $column->update($request->only(['title', 'header_background_color', 'position']));
+        $column->update($request->only(['title', 'header_background_color']));
 
         return response()->json([
             'status' => 'success',

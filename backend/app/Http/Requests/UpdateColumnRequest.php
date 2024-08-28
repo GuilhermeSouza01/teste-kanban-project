@@ -24,7 +24,6 @@ class UpdateColumnRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'header_background_color' => ['nullable', 'string', 'max:7'],
-            'position' => ['integer', 'min:0']
         ];
     }
 }
