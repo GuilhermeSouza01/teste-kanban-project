@@ -41,7 +41,26 @@ class ColumnController extends Controller
     {
         $request->validated();
 
-        $column = Column::create($request->all());
+        // Verificar se já existe uma coluna com o mesmo ID e ordem
+        $existingColumn = Column::where('id', $request->input('id'))
+            ->where('order', $request->input('order'))
+            ->first();
+
+        if ($existingColumn) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Coluna com o mesmo ID e ordem já existe',
+            ], 409); // Conflito
+        }
+
+        // Se não existir, criar uma nova coluna
+        $maxOrder = Column::max('order');
+        $newOrder = $maxOrder ? $maxOrder + 1 : 1;
+
+        $column = Column::create(array_merge(
+            $request->all(),
+            ['order' => $newOrder] // Define a ordem da nova coluna
+        ));
 
         return response()->json([
             'status' => 'success',
