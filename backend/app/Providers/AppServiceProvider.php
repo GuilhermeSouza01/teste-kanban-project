@@ -23,7 +23,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Task::observe(TaskObserver::class);
-        Column::observe(ColumnObserver::class);
+        //
     }
 }
