@@ -17,4 +17,4 @@ Route::apiResource('tasks', TaskController::class);
 Route::post('/tasks/update-order', [TaskController::class, 'updateTaskOrder']);
 
 // Atualiza a ordem das colunas
-Route::post('/columns/update-order', [ColumnController::class, 'updateColumnOrder']);
+Route::post('/columns/update-order', [ColumnController::class, 'updateOrder']);
