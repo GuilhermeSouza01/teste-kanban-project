@@ -53,15 +53,12 @@
             </form>
         </div>
     </div>
-
     <!-- Modal de edição de coluna -->
     <div id="column-modal" class="modal" style="display:none;">
         <div class="modal-content">
             <span id="close-column-modal" class="close-button">&times;</span>
             <h2 id="modal-title">Editar Coluna</h2>
             <form id="column-form">
-                <label for="color-picker">Escolha a cor:</label>
-                <input type="color" id="color-picker">
                 <label for="column-title">Título:</label>
                 <input type="text" id="column-title">
                 <input type="hidden" id="column-id">
@@ -69,6 +66,7 @@
             </form>
         </div>
     </div>
+
 
 
 @endsection
