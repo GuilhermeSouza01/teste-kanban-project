@@ -10,7 +10,7 @@ class BoardController extends Controller
     public function showBoardIndex()
     {
         // Carregar as colunas e suas tarefas
-        $columns = Column::orderBy('order', 'desc')->get();
+        $columns = Column::orderBy('order')->get();
 
         // Retornar a view com os dados necessários
         return view('board.index', ['columns' => $columns]);
