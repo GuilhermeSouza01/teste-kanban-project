@@ -14,7 +14,10 @@ class ColumnController extends Controller
      */
     public function index()
     {
-        $columns = Column::with('tasks')->get();
+        // Ordenar as colunas pelo campo 'order'
+        $columns = Column::with(['tasks' => function ($query) {
+            $query->orderBy('order'); // Ordena as tarefas dentro de cada coluna
+        }])->orderBy('order')->get(); // Ordena as colunas
 
         return response()->json([
             'status' => 'success',
@@ -101,18 +104,32 @@ class ColumnController extends Controller
 
     /**
      * Order the columns.
-     */
+     */ // Adicione este método ao seu controlador de colunas
     public function updateColumnOrder(Request $request)
     {
         $columns = $request->input('columns');
 
-        foreach ($columns as $index => $column) {
-            Column::where('id', $column['id'])->update(['order' => $index]);
+        foreach ($columns as $index => $columnId) {
+            Column::where('id', $columnId)->update(['order' => $index + 1]);
         }
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Colunas reordenadas com sucesso'
+            'message' => 'Colunas reordenadas com sucesso',
+        ], 200);
+    }
+
+    public function updateOrder(Request $request)
+    {
+        $columns = $request->input('columns');
+
+        foreach ($columns as $column) {
+            Column::where('id', $column['id'])->update(['order' => $column['order']]);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Ordem das colunas atualizada com sucesso',
         ], 200);
     }
 }
