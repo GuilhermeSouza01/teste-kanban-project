@@ -39,7 +39,28 @@ class TaskController extends Controller
     {
         $request->validated();
 
-        $task = Task::create($request->all());
+        // Verificar se já existe uma tarefa com o mesmo ID e ordem na mesma coluna
+        $existingTask = Task::where('id', $request->input('id'))
+            ->where('column_id', $request->input('column_id'))
+            ->where('order', $request->input('order'))
+            ->first();
+
+
+        if ($existingTask) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tarefa com o mesmo ID e ordem já existe',
+            ], 409);
+        }
+
+        // Se não existir, criar uma nova tarefa
+        $maxOrder = Task::where('column_id', $request->input('column_id'))->max('order');
+        $newOrder = $maxOrder ? $maxOrder + 1 : 1; // Define a nova ordem
+
+        $task = Task::create(array_merge(
+            $request->all(),
+            ['order' => $newOrder]
+        ));
 
         return response()->json([
             'status' => 'success',
