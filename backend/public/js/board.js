@@ -38,17 +38,43 @@ $(document).ready(function () {
         var url = taskId ? `/api/tasks/${taskId}` : "/api/tasks";
         var method = taskId ? "PUT" : "POST";
 
+        var taskData = {
+            title: $("#title").val(),
+            description: $("#description").val(),
+            column_id: $("#column-id").val(),
+            _token: "{{ csrf_token() }}",
+        };
+
+        console.log("Submitting task:", taskData);
+
         $.ajax({
             url: url,
             method: method,
-            data: {
-                title: $("#title").val(),
-                description: $("#description").val(),
-                column_id: $("#column-id").val(),
-                _token: "{{ csrf_token() }}",
-            },
+            data: taskData,
             success: function (response) {
-                location.reload();
+                console.log("Task saved successfully:", response);
+
+                // Adicionar nova tarefa à coluna se for uma nova tarefa
+                if (!taskId) {
+                    var newTaskHtml = `
+                        <div class="task" data-task-id="${response.data.id}" data-order="${response.data.order}">
+                            <h4>${response.data.title}</h4>
+                            <p>${response.data.description}</p>
+                        </div>`;
+                    $(
+                        `.tasks[data-column-id="${response.data.column_id}"]`
+                    ).append(newTaskHtml);
+                } else {
+                    // Atualizar a tarefa existente
+                    var taskElement = $(`.task[data-task-id="${taskId}"]`);
+                    taskElement.find("h4").text(response.data.title);
+                    taskElement.find("p").text(response.data.description);
+                }
+
+                $("#task-modal").fadeOut(); // Fechar o modal após salvar
+            },
+            error: function (response) {
+                console.error("Failed to save task:", response);
             },
         });
     });
@@ -66,7 +92,11 @@ $(document).ready(function () {
                     _token: "{{ csrf_token() }}",
                 },
                 success: function (response) {
+                    console.log("Task deleted successfully:", response);
                     $(`.task[data-task-id="${taskId}"]`).remove();
+                },
+                error: function (response) {
+                    console.error("Failed to delete task:", response);
                 },
             });
         }
@@ -75,11 +105,10 @@ $(document).ready(function () {
     // Abrir modal para editar coluna
     $(".column-header").click(function (event) {
         event.stopPropagation(); // Impede que outros eventos sejam acionados
-        var columnId = $(this).data("column-id");
-        var color = $(this).data("color");
-        var title = $(this).text();
 
-        $("#color-picker").val(color);
+        var columnId = $(this).closest(".column").data("column-id");
+        var title = $(this).find("h2").text(); // Captura apenas o texto do <h2>
+
         $("#column-title").val(title);
         $("#column-id").val(columnId);
         $("#modal-title").text("Editar Coluna");
@@ -93,33 +122,35 @@ $(document).ready(function () {
         $("body").removeClass("modal-open"); // Remove o desfoque do conteúdo
     });
 
-    // Submeter a troca de cor e título da coluna
+    // Submeter a troca de título da coluna
     $("#column-form").submit(function (e) {
         e.preventDefault();
 
         var columnId = $("#column-id").val();
-        var color = $("#color-picker").val();
         var title = $("#column-title").val();
+
+        var columnData = {
+            title: title,
+        };
+
+        console.log("Submitting column update:", columnData);
 
         $.ajax({
             url: `/api/columns/${columnId}`,
             method: "PATCH",
-            data: {
-                color: color,
-                title: title,
-                _token: "{{ csrf_token() }}",
-            },
+            data: columnData,
+
             success: function (response) {
+                console.log("Column updated successfully:", response);
                 var columnHeader = $(
                     `.column[data-column-id="${columnId}"] .column-header`
                 );
-                columnHeader.css("background-color", color);
-                columnHeader.text(title);
+                columnHeader.find("h2").text(title); // Atualiza apenas o título
                 $("#column-modal").fadeOut();
-                $("body").removeClass("modal-open"); // Remove o desfoque do conteúdo
+                $("body").removeClass("modal-open");
             },
             error: function (response) {
-                console.error("Failed to update column");
+                console.error("Failed to update column:", response);
             },
         });
     });
@@ -134,22 +165,25 @@ $(document).ready(function () {
                     attribute: "data-task-id",
                 });
 
+                var orderData = {
+                    tasks: tasks.map((taskId, index) => ({
+                        id: taskId,
+                        order: index + 1, // Ordem começa a partir de 1
+                        column_id: columnId,
+                    })),
+                };
+
+                console.log("Updating task order in column:", orderData);
+
                 $.ajax({
                     url: "/api/tasks/update-order",
                     method: "POST",
-                    data: {
-                        tasks: tasks.map((taskId, index) => ({
-                            id: taskId,
-                            order: index + 1, // Ordem começa a partir de 1
-                            column_id: columnId,
-                        })),
-                        _token: "{{ csrf_token() }}",
-                    },
+                    data: orderData,
                     success: function (response) {
-                        console.log("Order updated successfully");
+                        console.log("Order updated successfully:", response);
                     },
                     error: function (response) {
-                        console.error("Failed to update order");
+                        console.error("Failed to update order:", response);
                     },
                 });
             },
@@ -165,15 +199,32 @@ $(document).ready(function () {
                     attribute: "data-column-id",
                 });
 
+                console.log("Column order:", columns);
+
+                var orderData = {
+                    columns: columns.map((columnId, index) => ({
+                        id: columnId,
+                        order: index,
+                    })),
+                };
+
+                console.log("Updating column order:", orderData);
+
                 $.ajax({
                     url: "/api/columns/update-order",
                     method: "POST",
-                    data: {
-                        columns: columns.map((columnId, index) => ({
-                            id: columnId,
-                            order: index,
-                        })),
-                        _token: "{{ csrf_token() }}",
+                    data: orderData,
+                    success: function (response) {
+                        console.log(
+                            "Column order updated successfully:",
+                            response
+                        );
+                    },
+                    error: function (response) {
+                        console.error(
+                            "Failed to update column order:",
+                            response
+                        );
                     },
                 });
             },
