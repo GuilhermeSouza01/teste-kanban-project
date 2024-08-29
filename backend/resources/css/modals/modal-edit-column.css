@@ -1,0 +1,111 @@
+/* modal-edit-column.css */
+
+/* Modal Overlay */
+.modal-edit-column-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+/* Modal Content */
+.modal-edit-column-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    width: 400px;
+    max-width: 90%;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative;
+}
+
+/* Modal Header */
+.modal-edit-column-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+    margin-bottom: 15px;
+}
+
+.modal-edit-column-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.modal-edit-column-close {
+    background: transparent;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #999;
+}
+
+.modal-edit-column-close:hover {
+    color: #333;
+}
+
+/* Modal Body */
+.modal-edit-column-body {
+    margin-bottom: 15px;
+}
+
+.modal-edit-column-body label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+.modal-edit-column-body input,
+.modal-edit-column-body textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Modal Footer */
+.modal-edit-column-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    border-top: 1px solid #ddd;
+    padding-top: 10px;
+}
+
+.modal-edit-column-footer button {
+    background-color: blue;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.modal-edit-column-footer button.cancel {
+    background-color: red;
+}
+
+.modal-edit-column-footer button.cancel:hover {
+    background-color: darkred;
+}
+
+.modal-edit-column-footer button.save:hover {
+    background-color: darkblue;
+}
+
+/* Desfoque do fundo ao abrir o modal */
+.modal-open {
+    filter: blur(5px);
+    pointer-events: none;
+}
