@@ -128,15 +128,17 @@ class TaskController extends Controller
             ]);
         }
 
-        // Atualiza a ordem das tarefas na coluna para garantir ordens únicas
-        // Se todas as tarefas forem passadas, você pode comentar esta parte
-        foreach ($tasks as $task) {
-            Task::where('column_id', $task['column_id'])
+        // Após a atualização, vamos garantir que todas as tarefas em cada coluna tenham ordens únicas
+        $columns = array_unique(array_column($tasks, 'column_id'));
+
+        foreach ($columns as $columnId) {
+            $columnTasks = Task::where('column_id', $columnId)
                 ->orderBy('order')
-                ->get()
-                ->each(function ($task, $index) {
-                    $task->update(['order' => $index + 1]);
-                });
+                ->get();
+
+            foreach ($columnTasks as $index => $task) {
+                $task->update(['order' => $index + 1]);
+            }
         }
 
         return response()->json([
