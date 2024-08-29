@@ -7,6 +7,7 @@ use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -40,6 +41,8 @@ class TaskController extends Controller
         $request->validated();
 
         $task = Task::create($request->all());
+
+        Log::info('Task created', ['task' => $task]);
 
         return response()->json([
             'status' => 'success',
@@ -98,10 +101,27 @@ class TaskController extends Controller
         ], 200);
     }
 
-    public function reorderTasks(UpdateTaskRequest $request)
-    {
-        $request->validated();
+    // public function reorderTasks(UpdateTaskRequest $request)
+    // {
+    //     $request->validated();
 
+    //     $tasks = $request->input('tasks');
+
+    //     foreach ($tasks as $task) {
+    //         Task::where('id', $task['id'])->update([
+    //             'order' => $task['order'],
+    //             'column_id' => $task['column_id']
+    //         ]);
+    //     }
+
+    //     return response()->json([
+    //         'status' => 'success',
+    //         'message' => 'Tarefas reordenadas com sucesso'
+    //     ], 200);
+    // }
+
+    public function updateTaskOrder(Request $request)
+    {
         $tasks = $request->input('tasks');
 
         foreach ($tasks as $task) {
@@ -111,34 +131,52 @@ class TaskController extends Controller
             ]);
         }
 
-        return response()->json([
-            'status' => 'success',
-            'message' => 'Tarefas reordenadas com sucesso'
-        ], 200);
-    }
-
-    public function updateOrder(Request $request)
-    {
-        //Atualiza a ordem e as colunas das tarefas
-
-        // $request->validated();
-
-        $tasks = $request->input('tasks');
-
-        foreach ($tasks as $taskData) {
-            $task = Task::find($taskData['id']);
-
-            if ($task->order != $taskData['order']) {
-                $task->order = $taskData['order'];
-                $task->save();
-            }
+        // Atualiza a ordem das tarefas na coluna para garantir ordens únicas
+        // Se todas as tarefas forem passadas, você pode comentar esta parte
+        foreach ($tasks as $task) {
+            Task::where('column_id', $task['column_id'])
+                ->orderBy('order')
+                ->get()
+                ->each(function ($task, $index) {
+                    $task->update(['order' => $index + 1]);
+                });
         }
-
 
         return response()->json([
             'status' => 'success',
             'message' => 'Tarefas reordenadas com sucesso',
-            'data' => $tasks
+        ], 200);
+    }
+
+
+    // Ordem das tarefas em uma mesma coluna quando a é movida para outra coluna
+
+    public function updateTaskOrderInColumn(Request $request)
+    {
+        $tasks = $request->input('tasks');
+
+        foreach ($tasks as $task) {
+            Task::where('id', $task['id'])->update([
+                'order' => $task['order'],
+                'column_id' => $task['column_id']
+            ]);
+        }
+
+        // Atualiza a ordem das tarefas na coluna para garantir ordens únicas
+        $columnTasks = Task::where('column_id', $tasks[0]['column_id'])
+            ->orderBy('order')
+            ->get();
+
+        $order = 1;
+
+        foreach ($columnTasks as $task) {
+            $task->update(['order' => $order]);
+            $order++;
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Tarefas reordenadas com sucesso',
         ], 200);
     }
 }
