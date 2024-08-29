@@ -7,7 +7,6 @@ use App\Http\Requests\UpdateOrderRequest;
 use App\Http\Requests\UpdateTaskRequest;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class TaskController extends Controller
 {
@@ -41,8 +40,6 @@ class TaskController extends Controller
         $request->validated();
 
         $task = Task::create($request->all());
-
-        Log::info('Task created', ['task' => $task]);
 
         return response()->json([
             'status' => 'success',
