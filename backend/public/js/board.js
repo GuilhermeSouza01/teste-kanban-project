@@ -10,6 +10,42 @@ $(document).ready(function () {
         $("#modal-title").text("Create Task");
         $("#task-modal").fadeIn();
     });
+    // Evento de clique no botão de edição
+    $(document).on("click", ".edit-task", function (event) {
+        event.stopPropagation(); // Impede que outros eventos sejam acionados
+        var taskId = $(this).data("task-id");
+        $.get(`/api/tasks/${taskId}`, function (data) {
+            $("#task-id").val(data.data.id);
+            $("#title").val(data.data.title);
+            $("#description").val(data.data.description);
+            $("#column-id").val(data.data.column_id);
+            $("#modal-title").text("Edit Task");
+            $("#task-modal").fadeIn();
+        });
+    });
+
+    // Evento de clique no botão de exclusão
+    $(document).on("click", ".delete-task", function (event) {
+        event.stopPropagation(); // Impede que outros eventos sejam acionados
+        var taskId = $(this).data("task-id");
+
+        if (confirm("Are you sure you want to delete this task?")) {
+            $.ajax({
+                url: `/api/tasks/${taskId}`,
+                method: "DELETE",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                },
+                success: function (response) {
+                    console.log("Task deleted successfully:", response);
+                    $(`.task[data-task-id="${taskId}"]`).remove();
+                },
+                error: function (response) {
+                    console.error("Failed to delete task:", response);
+                },
+            });
+        }
+    });
 
     // Abrir modal para editar uma tarefa
     $(".edit-task").click(function (event) {
@@ -60,6 +96,8 @@ $(document).ready(function () {
                         <div class="task" data-task-id="${response.data.id}" data-order="${response.data.order}">
                             <h4>${response.data.title}</h4>
                             <p>${response.data.description}</p>
+                            <button class="edit-task" data-task-id="${response.data.id}">Edit</button>
+                            <button class="delete-task" data-task-id="${response.data.id}">Delete</button>
                         </div>`;
                     $(
                         `.tasks[data-column-id="${response.data.column_id}"]`
@@ -155,40 +193,45 @@ $(document).ready(function () {
         });
     });
 
-    // Funcionalidade para arrastar e soltar tarefas entre colunas
-    $(".tasks")
-        .sortable({
-            connectWith: ".tasks",
-            update: function (event, ui) {
-                var columnId = $(this).data("column-id");
-                var tasks = $(this).sortable("toArray", {
-                    attribute: "data-task-id",
-                });
+    $(document).ready(function () {
+        // Funcionalidade para arrastar e soltar tarefas entre colunas
+        $(".tasks")
+            .sortable({
+                connectWith: ".tasks",
+                update: function (event, ui) {
+                    var columnId = $(this).data("column-id");
+                    var tasks = $(this).sortable("toArray", {
+                        attribute: "data-task-id",
+                    });
 
-                var orderData = {
-                    tasks: tasks.map((taskId, index) => ({
-                        id: taskId,
-                        order: index + 1, // Ordem começa a partir de 1
-                        column_id: columnId,
-                    })),
-                };
+                    var orderData = {
+                        tasks: tasks.map((taskId, index) => ({
+                            id: taskId,
+                            order: index + 1, // Ordem começa a partir de 1
+                            column_id: columnId,
+                        })),
+                    };
 
-                console.log("Updating task order in column:", orderData);
+                    console.log("Updating task order in column:", orderData);
 
-                $.ajax({
-                    url: "/api/tasks/update-order",
-                    method: "POST",
-                    data: orderData,
-                    success: function (response) {
-                        console.log("Order updated successfully:", response);
-                    },
-                    error: function (response) {
-                        console.error("Failed to update order:", response);
-                    },
-                });
-            },
-        })
-        .disableSelection();
+                    $.ajax({
+                        url: "/api/tasks/update-order",
+                        method: "POST",
+                        data: orderData,
+                        success: function (response) {
+                            console.log(
+                                "Order updated successfully:",
+                                response
+                            );
+                        },
+                        error: function (response) {
+                            console.error("Failed to update order:", response);
+                        },
+                    });
+                },
+            })
+            .disableSelection();
+    });
 
     // Funcionalidade para arrastar e soltar colunas
     $(".board")
@@ -199,12 +242,10 @@ $(document).ready(function () {
                     attribute: "data-column-id",
                 });
 
-                console.log("Column order:", columns);
-
                 var orderData = {
                     columns: columns.map((columnId, index) => ({
                         id: columnId,
-                        order: index,
+                        order: index + 1, // Ordem começa em 1
                     })),
                 };
 
