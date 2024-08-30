@@ -1,5 +1,5 @@
-<aside class="sidebar-menu">
-    <nav class="menu-list">
+<aside class="sidebar">
+    <nav class="menu">
         <ul class="menu-items">
             <li class="menu-item">
                 <a href="#" class="menu-link">
