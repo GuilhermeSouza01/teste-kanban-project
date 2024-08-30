@@ -140,59 +140,64 @@ $(document).ready(function () {
         }
     });
 
-    // Abrir modal para editar coluna
-    $(".column-header").click(function (event) {
-        event.stopPropagation(); // Impede que outros eventos sejam acionados
+    $(document).ready(function () {
+        // Abrir modal para editar coluna
+        $(".column-header").click(function (event) {
+            event.stopPropagation(); // Impede que outros eventos sejam acionados
 
-        var columnId = $(this).closest(".column").data("column-id");
-        var title = $(this).find("h2").text(); // Captura apenas o texto do <h2>
+            var columnId = $(this).closest(".column").data("column-id");
+            var title = $(this).find("h2").text(); // Captura o texto do <h2>
+            var headerColor = $(this).css("background-color"); // Captura a cor de fundo
 
-        $("#column-title").val(title);
-        $("#column-id").val(columnId);
-        $("#modal-title").text("Editar Coluna");
-        $("#column-modal").fadeIn();
-        $("body").addClass("modal-open"); // Aplica o desfoque ao conteúdo
-    });
+            $("#column-title").val(title);
+            $("#header-background-color").val(headerColor); // Preenche o campo de cor
+            $("#column-id").val(columnId);
+            $("#modal-title").text("Editar Coluna");
+            $("#column-modal").fadeIn();
+            $("body").addClass("modal-open"); // Aplica o desfoque ao conteúdo
+        });
 
-    // Fechar o modal de edição de coluna
-    $("#close-column-modal").click(function () {
-        $("#column-modal").fadeOut();
-        $("body").removeClass("modal-open"); // Remove o desfoque do conteúdo
-    });
+        // Fechar o modal de edição de coluna
+        $("#close-column-modal").click(function () {
+            $("#column-modal").fadeOut();
+            $("body").removeClass("modal-open"); // Remove o desfoque do conteúdo
+        });
 
-    // Submeter a troca de título da coluna
-    $("#column-form").submit(function (e) {
-        e.preventDefault();
+        // Submeter a edição da coluna
+        $("#column-form").submit(function (e) {
+            e.preventDefault();
 
-        var columnId = $("#column-id").val();
-        var title = $("#column-title").val();
+            var columnId = $("#column-id").val();
+            var title = $("#column-title").val();
+            var headerColor = $("#header-background-color").val(); // Captura a nova cor
 
-        var columnData = {
-            title: title,
-        };
+            var columnData = {
+                title: title,
+                header_background_color: headerColor, // Inclui a cor no envio
+            };
 
-        console.log("Submitting column update:", columnData);
+            console.log("Submitting column update:", columnData);
 
-        $.ajax({
-            url: `/api/columns/${columnId}`,
-            method: "PATCH",
-            data: columnData,
-
-            success: function (response) {
-                console.log("Column updated successfully:", response);
-                var columnHeader = $(
-                    `.column[data-column-id="${columnId}"] .column-header`
-                );
-                columnHeader.find("h2").text(title); // Atualiza apenas o título
-                $("#column-modal").fadeOut();
-                $("body").removeClass("modal-open");
-            },
-            error: function (response) {
-                console.error("Failed to update column:", response);
-            },
+            $.ajax({
+                url: `/api/columns/${columnId}`,
+                method: "PATCH",
+                data: columnData,
+                success: function (response) {
+                    console.log("Column updated successfully:", response);
+                    var columnHeader = $(
+                        `.column[data-column-id="${columnId}"] .column-header`
+                    );
+                    columnHeader.find("h2").text(title); // Atualiza o título
+                    columnHeader.css("background-color", headerColor); // Atualiza a cor
+                    $("#column-modal").fadeOut();
+                    $("body").removeClass("modal-open");
+                },
+                error: function (response) {
+                    console.error("Failed to update column:", response);
+                },
+            });
         });
     });
-
     $(document).ready(function () {
         // Funcionalidade para arrastar e soltar tarefas entre colunas
         $(".tasks")
