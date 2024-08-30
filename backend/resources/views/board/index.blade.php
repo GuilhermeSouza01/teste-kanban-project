@@ -53,19 +53,25 @@
             </form>
         </div>
     </div>
-    <!-- Modal de edição de coluna -->
-    <div id="column-modal" class="modal" style="display:none;">
+    <div id="column-modal" class="modal">
         <div class="modal-content">
-            <span id="close-column-modal" class="close-button">&times;</span>
+            <span id="close-column-modal" class="close">&times;</span>
             <h2 id="modal-title">Editar Coluna</h2>
             <form id="column-form">
-                <label for="column-title">Título:</label>
-                <input type="text" id="column-title">
                 <input type="hidden" id="column-id">
-                <button type="submit">Salvar</button>
+                <div class="form-group">
+                    <label for="column-title">Título</label>
+                    <input type="text" id="column-title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="header-background-color">Cor de Fundo</label>
+                    <input type="color" id="header-background-color" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
             </form>
         </div>
     </div>
+
 
 
 
