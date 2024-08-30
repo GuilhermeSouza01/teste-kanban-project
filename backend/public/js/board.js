@@ -140,14 +140,26 @@ $(document).ready(function () {
         }
     });
 
+    // Função para converter Rgb para Hex
+
+    function rgbToHex(rgb) {
+        var rgbArr = rgb.match(/\d+/g);
+        return rgbArr
+            ? "#" +
+                  ("0" + parseInt(rgbArr[0], 10).toString(16)).slice(-2) +
+                  ("0" + parseInt(rgbArr[1], 10).toString(16)).slice(-2) +
+                  ("0" + parseInt(rgbArr[2], 10).toString(16)).slice(-2)
+            : rgb;
+    }
+
     $(document).ready(function () {
         // Abrir modal para editar coluna
         $(".column-header").click(function (event) {
             event.stopPropagation(); // Impede que outros eventos sejam acionados
 
             var columnId = $(this).closest(".column").data("column-id");
-            var title = $(this).find("h2").text(); // Captura o texto do <h2>
-            var headerColor = $(this).css("background-color"); // Captura a cor de fundo
+            var title = $(this).find("h4").text(); // Captura o texto do <h2>
+            var headerColor = rgbToHex($(this).css("background-color")); // Captura a cor de fundo
 
             $("#column-title").val(title);
             $("#header-background-color").val(headerColor); // Preenche o campo de cor
