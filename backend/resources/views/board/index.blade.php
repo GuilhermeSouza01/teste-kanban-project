@@ -47,8 +47,8 @@
                     <textarea id="description" required></textarea>
                 </div>
                 <div class="form-actions">
-                    <button type="button" id="close-modal" class="btn-cancel">Cancel</button>
-                    <button type="submit" class="btn-save">Save</button>
+                    <button type="button" id="close-modal" class="btn-cancel">Cancelar</button>
+                    <button type="submit" class="btn-save">Salvar</button>
                 </div>
             </form>
         </div>
@@ -70,7 +70,7 @@
                     <label for="header-background-color">Cor de Fundo</label>
                     <input type="color" id="header-background-color" class="form-control">
                 </div>
-                <button type="submit" class="btn btn-primary">Salvar</button>
+                <button type="submit" class="btn btn-save">Salvar</button>
             </form>
         </div>
     </div>
