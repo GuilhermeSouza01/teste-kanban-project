@@ -1,7 +1,7 @@
 $(document).ready(function () {
     // Abrir modal para adicionar uma nova tarefa
     $(".open-modal").click(function (event) {
-        event.stopPropagation(); // Impede que outros eventos sejam acionados
+        event.stopPropagation();
         var columnId = $(this).data("column-id");
         $("#column-id").val(columnId);
         $("#task-id").val("");
@@ -12,7 +12,7 @@ $(document).ready(function () {
     });
     // Evento de clique no botão de edição
     $(document).on("click", ".edit-task", function (event) {
-        event.stopPropagation(); // Impede que outros eventos sejam acionados
+        event.stopPropagation();
         var taskId = $(this).data("task-id");
         $.get(`/api/tasks/${taskId}`, function (data) {
             $("#task-id").val(data.data.id);
@@ -26,7 +26,7 @@ $(document).ready(function () {
 
     // Evento de clique no botão de exclusão
     $(document).on("click", ".delete-task", function (event) {
-        event.stopPropagation(); // Impede que outros eventos sejam acionados
+        event.stopPropagation();
         var taskId = $(this).data("task-id");
 
         if (confirm("Are you sure you want to delete this task?")) {
@@ -49,7 +49,7 @@ $(document).ready(function () {
 
     // Abrir modal para editar uma tarefa
     $(".edit-task").click(function (event) {
-        event.stopPropagation(); // Impede que outros eventos sejam acionados
+        event.stopPropagation();
         var taskId = $(this).data("task-id");
         $.get(`/api/tasks/${taskId}`, function (data) {
             $("#task-id").val(data.data.id);
@@ -119,7 +119,7 @@ $(document).ready(function () {
 
     // Deletar uma tarefa
     $(".delete-task").click(function (event) {
-        event.stopPropagation(); // Impede que outros eventos sejam acionados
+        event.stopPropagation();
         var taskId = $(this).data("task-id");
 
         if (confirm("Are you sure you want to delete this task?")) {
@@ -155,10 +155,10 @@ $(document).ready(function () {
     $(document).ready(function () {
         // Abrir modal para editar coluna
         $(".column-header").click(function (event) {
-            event.stopPropagation(); // Impede que outros eventos sejam acionados
+            event.stopPropagation();
 
             var columnId = $(this).closest(".column").data("column-id");
-            var title = $(this).find("h4").text(); // Captura o texto do <h2>
+            var title = $(this).find("h4").text(); // Captura o texto do <h4>
             var headerColor = rgbToHex($(this).css("background-color")); // Captura a cor de fundo
 
             $("#column-title").val(title);
