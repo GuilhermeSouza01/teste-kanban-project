@@ -12,7 +12,7 @@
             @foreach ($columns as $column)
                 <div class="column" data-column-id="{{ $column->id }}">
                     <div class="column-header" style="background-color: {{ $column->header_background_color }}">
-                        <h2>{{ $column->title }}</h2>
+                        <h4>{{ $column->title }}</h4>
                         <button class="open-modal" data-column-id="{{ $column->id }}">Add Task</button>
                     </div>
                     <div class="tasks" data-column-id="{{ $column->id }}">
@@ -53,6 +53,9 @@
             </form>
         </div>
     </div>
+
+    <!-- Modal de edição do cabeçalho da coluna -->
+
     <div id="column-modal" class="modal">
         <div class="modal-content">
             <span id="close-column-modal" class="close">&times;</span>
