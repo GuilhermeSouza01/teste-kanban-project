@@ -1,7 +1,6 @@
 /* Layout principal da aplicação */
 .app-layout {
     display: flex;
-    flex-direction: column;
     min-height: 100vh;
     background-color: #212529;
     color: #fff;
@@ -61,9 +60,10 @@
 }
 
 /* Conteúdo principal */
-.app-main {
-    flex: 1;
+.main-content {
+    margin-left: 60px;
     padding: 20px;
+    flex: 1;
 }
 
 .app-content {
