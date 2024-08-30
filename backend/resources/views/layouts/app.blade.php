@@ -11,10 +11,12 @@
 </head>
 
 <body>
-    @include('layouts._partials.sidebar')
+    <div class="app-layout">
+        @include('layouts._partials.sidebar')
 
-    <div class="main-content">
-        @yield('content')
+        <div class="main-content">
+            @yield('content')
+        </div>
     </div>
 
     <script src="{{ asset('js/jquery.min.js') }}"></script>
