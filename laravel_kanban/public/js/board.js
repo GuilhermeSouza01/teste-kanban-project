@@ -1,79 +1,71 @@
 $(document).ready(function () {
-    // Abrir modal para adicionar uma nova tarefa
-    $(".open-modal").click(function (event) {
-        event.stopPropagation();
-        var columnId = $(this).data("column-id");
+    // Função para abrir o modal de tarefa
+    function openTaskModal(
+        taskId = "",
+        columnId = "",
+        title = "",
+        description = "",
+        modalTitle = "Create Task"
+    ) {
+        $("#task-id").val(taskId);
         $("#column-id").val(columnId);
-        $("#task-id").val("");
-        $("#title").val("");
-        $("#description").val("");
-        $("#modal-title").text("Create Task");
+        $("#title").val(title);
+        $("#description").val(description);
+        $("#modal-title").text(modalTitle);
         $("#task-modal").fadeIn();
+    }
+
+    // Evento para abrir o modal de adicionar nova tarefa
+    $(document).on("click", ".add-task-button", function (event) {
+        event.stopPropagation();
+        openTaskModal("", $(this).data("column-id"), "", "", "Create Task");
     });
-    // Evento de clique no botão de edição
+
+    // Evento para abrir o modal de edição de tarefa
     $(document).on("click", ".edit-task", function (event) {
         event.stopPropagation();
         var taskId = $(this).data("task-id");
         $.get(`/api/tasks/${taskId}`, function (data) {
-            $("#task-id").val(data.data.id);
-            $("#title").val(data.data.title);
-            $("#description").val(data.data.description);
-            $("#column-id").val(data.data.column_id);
-            $("#modal-title").text("Edit Task");
-            $("#task-modal").fadeIn();
+            openTaskModal(
+                data.data.id,
+                data.data.column_id,
+                data.data.title,
+                data.data.description,
+                "Edit Task"
+            );
         });
     });
 
-    // Evento de clique no botão de exclusão
+    // Evento para excluir uma tarefa
     $(document).on("click", ".delete-task", function (event) {
         event.stopPropagation();
         var taskId = $(this).data("task-id");
-
         if (confirm("Are you sure you want to delete this task?")) {
             $.ajax({
                 url: `/api/tasks/${taskId}`,
                 method: "DELETE",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                },
+                data: { _token: "{{ csrf_token() }}" },
                 success: function (response) {
-                    console.log("Task deleted successfully:", response);
                     $(`.task[data-task-id="${taskId}"]`).remove();
                 },
                 error: function (response) {
-                    console.error("Failed to delete task:", response);
+                    alert("Failed to delete task. Please try again.");
                 },
             });
         }
     });
 
-    // Abrir modal para editar uma tarefa
-    $(".edit-task").click(function (event) {
-        event.stopPropagation();
-        var taskId = $(this).data("task-id");
-        $.get(`/api/tasks/${taskId}`, function (data) {
-            $("#task-id").val(data.data.id);
-            $("#title").val(data.data.title);
-            $("#description").val(data.data.description);
-            $("#column-id").val(data.data.column_id);
-            $("#modal-title").text("Edit Task");
-            $("#task-modal").fadeIn();
-        });
-    });
-
-    // Fechar o modal de tarefa
-    $("#close-modal").click(function () {
+    // Evento para fechar o modal de tarefa
+    $(document).on("click", "#close-modal", function () {
         $("#task-modal").fadeOut();
     });
 
-    // Submeter o formulário do modal de tarefa
-    $("#task-form").submit(function (e) {
+    // Submissão do formulário de tarefa
+    $(document).on("submit", "#task-form", function (e) {
         e.preventDefault();
-
         var taskId = $("#task-id").val();
         var url = taskId ? `/api/tasks/${taskId}` : "/api/tasks";
         var method = taskId ? "PUT" : "POST";
-
         var taskData = {
             title: $("#title").val(),
             description: $("#description").val(),
@@ -81,67 +73,36 @@ $(document).ready(function () {
             _token: "{{ csrf_token() }}",
         };
 
-        console.log("Submitting task:", taskData);
-
         $.ajax({
             url: url,
             method: method,
             data: taskData,
             success: function (response) {
-                console.log("Task saved successfully:", response);
-
-                // Adicionar nova tarefa à coluna se for uma nova tarefa
+                var taskHtml = `
+                    <div class="task" data-task-id="${response.data.id}">
+                        <h4>${response.data.title}</h4>
+                        <p>${response.data.description}</p>
+                        <button class="edit-task" data-task-id="${response.data.id}">Edit</button>
+                        <button class="delete-task" data-task-id="${response.data.id}">Delete</button>
+                    </div>`;
                 if (!taskId) {
-                    var newTaskHtml = `
-                        <div class="task" data-task-id="${response.data.id}" data-order="${response.data.order}">
-                            <h4>${response.data.title}</h4>
-                            <p>${response.data.description}</p>
-                            <button class="edit-task" data-task-id="${response.data.id}">Edit</button>
-                            <button class="delete-task" data-task-id="${response.data.id}">Delete</button>
-                        </div>`;
                     $(
-                        `.tasks[data-column-id="${response.data.column_id}"]`
-                    ).append(newTaskHtml);
+                        ".tasks[data-column-id='" +
+                            response.data.column_id +
+                            "'] .add-task-button"
+                    ).before(taskHtml);
                 } else {
-                    // Atualizar a tarefa existente
-                    var taskElement = $(`.task[data-task-id="${taskId}"]`);
-                    taskElement.find("h4").text(response.data.title);
-                    taskElement.find("p").text(response.data.description);
+                    $(`.task[data-task-id="${taskId}"]`).replaceWith(taskHtml);
                 }
-
-                $("#task-modal").fadeOut(); // Fechar o modal após salvar
+                $("#task-modal").fadeOut();
             },
             error: function (response) {
-                console.error("Failed to save task:", response);
+                alert("Failed to save task. Please try again.");
             },
         });
     });
 
-    // Deletar uma tarefa
-    $(".delete-task").click(function (event) {
-        event.stopPropagation();
-        var taskId = $(this).data("task-id");
-
-        if (confirm("Are you sure you want to delete this task?")) {
-            $.ajax({
-                url: `/api/tasks/${taskId}`,
-                method: "DELETE",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                },
-                success: function (response) {
-                    console.log("Task deleted successfully:", response);
-                    $(`.task[data-task-id="${taskId}"]`).remove();
-                },
-                error: function (response) {
-                    console.error("Failed to delete task:", response);
-                },
-            });
-        }
-    });
-
-    // Função para converter Rgb para Hex
-
+    // Função para converter RGB para HEX
     function rgbToHex(rgb) {
         var rgbArr = rgb.match(/\d+/g);
         return rgbArr
@@ -152,105 +113,94 @@ $(document).ready(function () {
             : rgb;
     }
 
-    $(document).ready(function () {
-        // Abrir modal para editar coluna
-        $(".column-header").click(function (event) {
-            event.stopPropagation();
+    // Abrir modal para editar coluna
+    $(document).on("click", ".column-header", function (event) {
+        event.stopPropagation();
+        var columnId = $(this).closest(".column").data("column-id");
+        var title = $(this).find("h4").text();
+        var headerColor = rgbToHex($(this).css("background-color"));
 
-            var columnId = $(this).closest(".column").data("column-id");
-            var title = $(this).find("h4").text(); // Captura o texto do <h4>
-            var headerColor = rgbToHex($(this).css("background-color")); // Captura a cor de fundo
+        $("#column-title").val(title);
+        $("#header-background-color").val(headerColor);
+        $("#column-id").val(columnId);
+        $("#modal-title").text("Edit Column");
+        $("#column-modal").fadeIn();
+        $("body").addClass("modal-open");
+    });
 
-            $("#column-title").val(title);
-            $("#header-background-color").val(headerColor); // Preenche o campo de cor
-            $("#column-id").val(columnId);
-            $("#modal-title").text("Editar Coluna");
-            $("#column-modal").fadeIn();
-            $("body").addClass("modal-open"); // Aplica o desfoque ao conteúdo
-        });
+    // Fechar modal de edição de coluna
+    $(document).on("click", "#close-column-modal", function () {
+        $("#column-modal").fadeOut();
+        $("body").removeClass("modal-open");
+    });
 
-        // Fechar o modal de edição de coluna
-        $("#close-column-modal").click(function () {
-            $("#column-modal").fadeOut();
-            $("body").removeClass("modal-open"); // Remove o desfoque do conteúdo
-        });
+    // Submissão do formulário de edição de coluna
+    $(document).on("submit", "#column-form", function (e) {
+        e.preventDefault();
+        var columnId = $("#column-id").val();
+        var title = $("#column-title").val();
+        var headerColor = $("#header-background-color").val();
 
-        // Submeter a edição da coluna
-        $("#column-form").submit(function (e) {
-            e.preventDefault();
-
-            var columnId = $("#column-id").val();
-            var title = $("#column-title").val();
-            var headerColor = $("#header-background-color").val(); // Captura a nova cor
-
-            var columnData = {
+        $.ajax({
+            url: `/api/columns/${columnId}`,
+            method: "PATCH",
+            data: {
                 title: title,
-                header_background_color: headerColor, // Inclui a cor no envio
-            };
-
-            console.log("Submitting column update:", columnData);
-
-            $.ajax({
-                url: `/api/columns/${columnId}`,
-                method: "PATCH",
-                data: columnData,
-                success: function (response) {
-                    console.log("Column updated successfully:", response);
-                    var columnHeader = $(
-                        `.column[data-column-id="${columnId}"] .column-header`
-                    );
-                    columnHeader.find("h2").text(title); // Atualiza o título
-                    columnHeader.css("background-color", headerColor); // Atualiza a cor
-                    $("#column-modal").fadeOut();
-                    $("body").removeClass("modal-open");
-                },
-                error: function (response) {
-                    console.error("Failed to update column:", response);
-                },
-            });
+                header_background_color: headerColor,
+                _token: "{{ csrf_token() }}",
+            },
+            success: function (response) {
+                var columnHeader = $(
+                    `.column[data-column-id="${columnId}"] .column-header`
+                );
+                columnHeader.find("h4").text(title);
+                columnHeader.css("background-color", headerColor);
+                $("#column-modal").fadeOut();
+                $("body").removeClass("modal-open");
+            },
+            error: function (response) {
+                alert("Failed to update column. Please try again.");
+            },
         });
     });
-    $(document).ready(function () {
-        // Funcionalidade para arrastar e soltar tarefas entre colunas
-        $(".tasks")
-            .sortable({
-                connectWith: ".tasks",
-                update: function (event, ui) {
-                    var columnId = $(this).data("column-id");
-                    var tasks = $(this).sortable("toArray", {
-                        attribute: "data-task-id",
-                    });
 
-                    var orderData = {
-                        tasks: tasks.map((taskId, index) => ({
-                            id: taskId,
-                            order: index + 1, // Ordem começa a partir de 1
-                            column_id: columnId,
-                        })),
-                    };
+    // Funcionalidade de arrastar e soltar tarefas entre colunas
+    $(".tasks")
+        .sortable({
+            connectWith: ".tasks",
+            update: function (event, ui) {
+                var columnId = $(this).data("column-id");
+                var tasks = $(this).sortable("toArray", {
+                    attribute: "data-task-id",
+                });
 
-                    console.log("Updating task order in column:", orderData);
+                var orderData = {
+                    tasks: tasks.map((taskId, index) => ({
+                        id: taskId,
+                        order: index + 1,
+                        column_id: columnId,
+                    })),
+                };
 
-                    $.ajax({
-                        url: "/api/tasks/update-order",
-                        method: "POST",
-                        data: orderData,
-                        success: function (response) {
-                            console.log(
-                                "Order updated successfully:",
-                                response
-                            );
-                        },
-                        error: function (response) {
-                            console.error("Failed to update order:", response);
-                        },
-                    });
-                },
-            })
-            .disableSelection();
-    });
+                $.ajax({
+                    url: "/api/tasks/update-order",
+                    method: "POST",
+                    data: orderData,
+                    success: function (response) {
+                        console.log(
+                            "Task order updated successfully:",
+                            response
+                        );
+                    },
+                    error: function (response) {
+                        alert("Failed to update task order. Please try again.");
+                    },
+                });
+            },
+        })
+        .disableSelection();
 
-    // Funcionalidade para arrastar e soltar colunas
+    // Funcionalidade de arrastar e soltar colunas
     $(".board")
         .sortable({
             items: ".column",
@@ -262,11 +212,9 @@ $(document).ready(function () {
                 var orderData = {
                     columns: columns.map((columnId, index) => ({
                         id: columnId,
-                        order: index + 1, // Ordem começa em 1
+                        order: index + 1,
                     })),
                 };
-
-                console.log("Updating column order:", orderData);
 
                 $.ajax({
                     url: "/api/columns/update-order",
@@ -279,13 +227,47 @@ $(document).ready(function () {
                         );
                     },
                     error: function (response) {
-                        console.error(
-                            "Failed to update column order:",
-                            response
+                        alert(
+                            "Failed to update column order. Please try again."
                         );
                     },
                 });
             },
         })
         .disableSelection();
+
+    // Função para abrir o modal de confirmação de exclusão de coluna
+    function openDeleteColumnModal(columnId) {
+        $("#delete-column-modal").data("column-id", columnId).fadeIn();
+    }
+
+    $(document).on("click", ".delete-column-button", function (event) {
+        event.stopPropagation();
+        var columnId = $(this).data("column-id");
+        openDeleteColumnModal(columnId);
+    });
+
+    $(document).on("click", "#close-delete-column-modal", function () {
+        $("#delete-column-modal").fadeOut();
+    });
+
+    $(document).on("click", "#cancel-delete-column", function () {
+        $("#delete-column-modal").fadeOut();
+    });
+
+    $(document).on("click", "#confirm-delete-column", function () {
+        var columnId = $("#delete-column-modal").data("column-id");
+
+        $.ajax({
+            url: `/api/columns/${columnId}`,
+            method: "DELETE",
+            success: function (response) {
+                $(`.column[data-column-id="${columnId}"]`).remove();
+                $("#delete-column-modal").fadeOut();
+            },
+            error: function (response) {
+                alert("Failed to delete column. Please try again.");
+            },
+        });
+    });
 });

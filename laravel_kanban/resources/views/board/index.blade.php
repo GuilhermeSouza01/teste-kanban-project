@@ -13,7 +13,9 @@
                 <div class="column" data-column-id="{{ $column->id }}">
                     <div class="column-header" style="background-color: {{ $column->header_background_color }}">
                         <h4>{{ $column->title }}</h4>
-                        <button class="open-modal" data-column-id="{{ $column->id }}">Add Task</button>
+                        <button class="delete-column-button" data-column-id="{{ $column->id }}">
+                            <span class="icon">×</span>
+                        </button>
                     </div>
                     <div class="tasks" data-column-id="{{ $column->id }}">
                         @foreach ($column->tasks as $task)
@@ -24,6 +26,9 @@
                                 <button class="delete-task" data-task-id="{{ $task->id }}">Delete</button>
                             </div>
                         @endforeach
+                        <div class="task add-task-button" data-column-id="{{ $column->id }}">
+                            <span>+</span>
+                        </div>
                     </div>
                 </div>
             @endforeach
@@ -72,6 +77,20 @@
                 </div>
                 <button type="submit" class="btn btn-save">Salvar</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal de confirmação de exclusão de coluna -->
+
+    <div id="delete-column-modal" class="modal">
+        <div class="modal-content">
+            <span id="close-delete-column-modal" class="close">&times;</span>
+            <h2 id="modal-title">Excluir Coluna</h2>
+            <p>Tem certeza que deseja excluir esta coluna?</p>
+            <div class="form-actions">
+                <button id="cancel-delete-column" class="btn-cancel">Cancelar</button>
+                <button id="confirm-delete-column" class="btn-delete">Excluir</button>
+            </div>
         </div>
     </div>
 
