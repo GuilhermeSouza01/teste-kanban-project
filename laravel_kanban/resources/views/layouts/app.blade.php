@@ -15,6 +15,9 @@
         @include('layouts._partials.sidebar')
 
         <div class="main-content">
+            <div class="add-collumn-container">
+                <button id="add-column-button" class="add-column-button">Adicionar Coluna</button>
+            </div>
             @yield('content')
         </div>
     </div>

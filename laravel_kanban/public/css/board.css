@@ -3,14 +3,15 @@
     overflow-x: auto;
     gap: 20px;
     flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: flex-start;
 }
 
 .column {
     background-color: #2c2c2c;
-    padding: 0;
-
+    padding: 0 5px;
     width: calc(33.33% - 20px);
-    width: 300px;
+    width: 250px;
     border-radius: 5px;
     display: flex;
     flex-direction: column;
@@ -19,6 +20,8 @@
     min-height: auto;
     color: #000;
     position: relative;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+    box-sizing: border-box;
 
 }
 
@@ -65,7 +68,7 @@
 
 .tasks {
     margin-top: 0;
-    padding: 15px;
+    padding: 10px;
     flex: 1;
     overflow-y: auto;
     box-sizing: border-box;
@@ -97,13 +100,15 @@
     background-color: #3a3a3a;
     color: #fff;
     cursor: pointer;
-    height: 20px;
-    margin-top: 10px;
+    height: 40px;
+    margin: 15px 10px;
     border-radius: 5px;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
     transition: background-color 0.3s;
     font-size: 24px;
     font-weight: bold;
+    width: 220px;
+    box-sizing: border-box;
 }
 
 .add-task-button:hover {
@@ -192,6 +197,20 @@
     background-color: rgba(255, 255, 255, 0.2);
 }
 
+.btn-edit {
+    background-color: rgb(30, 136, 229);
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-edit:hover {
+    background-color: rgb(54, 138, 211);
+}
+
 .btn-save {
     background-color: #6365f1;
     color: white;
@@ -210,4 +229,8 @@
     border-radius: 5px;
     cursor: pointer;
     font-weight: bold;
+}
+
+.btn-delete:hover {
+    background-color: #ff0000;
 }
